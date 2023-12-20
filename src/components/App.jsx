@@ -17,47 +17,31 @@ export class App extends Component {
     filter: '',
   };
 
-  // onSubmitForm = data => {
-  //   const newObj = { ...data, id: nanoid() };
-  //   this.setState(({ contacts }) => {
-  //     if (this.isNameNew(contacts, newObj) === undefined) {
-  //       return { contacts: [...contacts, newObj] };
-  //     } else {
-  //       Notify.warning(`${newObj.name} is already in contacts`, {
-  //         width: '500px',
-  //         position: 'right-top',
-  //         timeout: 3000,
-  //         fontSize: '20px',
-  //       });
-  //       return { contacts: [...contacts] };
-  //     }
-  //   });
-  // };
-
   onSubmitForm = data => {
+    const isNameNew = this.checkIsNameNew(data.name);
+
+    if (!isNameNew) {
+      Notify.warning(`${data.name} is already in contacts`, {
+        width: '500px',
+        position: 'right-top',
+        timeout: 3000,
+        fontSize: '20px',
+      });
+      return;
+    }
+
     const newObj = { ...data, id: nanoid() };
-    let showAlert = false;
+
     this.setState(({ contacts }) => {
-      if (this.isNameNew(contacts, newObj) === undefined) {
-        return { contacts: [...contacts, newObj] };
-      } else {
-        if (!showAlert) {
-          showAlert = true;
-          Notify.warning(`${newObj.name} is already in contacts`, {
-            width: '500px',
-            position: 'right-top',
-            timeout: 3000,
-            fontSize: '20px',
-          });
-        }
-        return { contacts: [...contacts] };
-      }
+      return {
+        contacts: [...contacts, newObj],
+      };
     });
   };
 
-  isNameNew = (contacts, newObj) => {
-    return contacts.find(
-      ({ name }) => name.toLowerCase() === newObj.name.toLowerCase()
+  checkIsNameNew = contactName => {
+    return !this.state.contacts.find(
+      ({ name }) => name.toLowerCase() === contactName.toLowerCase()
     );
   };
 
@@ -90,10 +74,12 @@ export class App extends Component {
         <Form onSubmit={this.onSubmitForm} />
         <h2>Contacts</h2>
         <Filter filter={filter} onChangeFilter={this.onChangeFilter} />
-        <ContactsList
-          contacts={visibleContacts}
-          onDeleteContact={this.deleteContact}
-        />
+        {visibleContacts.length > 0 && (
+          <ContactsList
+            contacts={visibleContacts}
+            onDeleteContact={this.deleteContact}
+          />
+        )}
       </div>
     );
   }

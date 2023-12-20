@@ -1,7 +1,7 @@
 import css from './ContactItem.module.css';
 
 const ContactItem = ({ name, number, id, onDeleteContact }) => (
-  <div className={css.contactsList} key={id}>
+  <div className={css.contactsList}>
     <p>
       {name}: {number}
     </p>
